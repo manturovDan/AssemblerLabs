@@ -52,6 +52,9 @@ Start:	mov	ax, @data
 	mul ecx
 	div ebx
 	mul ecx
+
+	pop ebx
+	add eax, ebx
 	
 	mov ax, 4C00h
 	int 21h
