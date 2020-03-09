@@ -32,6 +32,15 @@ Start:	mov	ax, @data
 	div bl
 
 	push eax
+
+	xor eax, eax
+	mov al, a
+	mul al
+	mov cl, b
+	xor ch, ch
+	add ax, cx
+	mov dx, 5h
+	mul dx
 	
 	mov ax, 4C00h
 	int 21h
