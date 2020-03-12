@@ -2,11 +2,11 @@
 	.stack 100h
 	.486
 	.data
-a	db	40
-b	db	100
-c	db	20
-d	db	5
-e	db	7
+a	db	10
+b	db	5
+c	db	100
+d	db	3
+e	db	8
 	.code
 Start:	mov	ax, @data
 	mov	ds, ax
@@ -26,11 +26,11 @@ Start:	mov	ax, @data
 	shr	ax, 2
 
 	xor ebx, ebx
-	mov bl, e
-	div bl
+	;mov bl, e
+	;div bl
 	xor ah, ah
 	mul cx
-	div bl
+	;div bl
 
 	push eax
 
@@ -48,13 +48,16 @@ Start:	mov	ax, @data
 	mul dx
 
 	shr eax, 2
-	div ebx
+	;div ebx
 	mul ecx
-	div ebx
+	;div ebx
 	mul ecx
 
-	pop ebx
-	add eax, ebx
+	pop edx
+	add eax, edx
+	xor edx, edx
+	div ebx
+	div ebx
 	
 	mov ax, 4C00h
 	int 21h
