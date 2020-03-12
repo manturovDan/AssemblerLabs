@@ -3,7 +3,7 @@
 	.486
 	.data
 ;a	dw	1011010110111000b
-a	dw	0110110011100110b
+a	dw	0110011001100110b
 	.code
 Start:	mov	ax, @data
 	mov	ds, ax
