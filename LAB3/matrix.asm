@@ -27,16 +27,39 @@ Start:	mov	ax, @data
 	
 	xor	ecx, ecx
 	mov	cl, n ;rows
-	
+	xor	ebx, ebx	
+
 	LROWS:
-		mov	esp, ecx
+		push	ecx
 		xor	ecx, ecx
+		
 		
 		mov	cl, m ;cols
 		LCOLS:
-			
+			xor	ax, ax
+			mov	al, nzcount
+			mov	dl, 3
+			mul	dl
+			mov	dx, ax ;9
+			xor	ax, ax
+
+			WI:	cmp	ax, dx
+				jge	ROW
+				
+				push	ebx
+				
+				xor	ebx, ebx
+				mov	bx, [si + ax + 1]
+
+				cmp	bx, 				
+
+				pop	ebx
+				
+				add	ax, 3				
+				jmp	WI
+			ROW: 	inc	ebx
 		loop LCOLS
-		mov ecx, esp
+		pop	ecx
 		
 	loop LROWS
 
