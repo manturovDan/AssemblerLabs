@@ -51,7 +51,4 @@ Start:	mov	ax, @data
 
 CE:	mov	ax, 4C00h
 	int	21h
-;;er:	mov	ax, 4C01h
-;	jmp	ex
-;	end
 end Start
