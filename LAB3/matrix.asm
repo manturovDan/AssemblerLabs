@@ -6,17 +6,34 @@ n	db	5
 m	db	6
 nzcount	db	3
 chain	dw	1,2,300, 4,4,11, 5,2,-7
-matrix	dw	30 dup (0)
+matrix	dw	30 dup (?)
 	.code
 Start:	mov	ax, @data
 	mov	ds, ax
-	mov	di, ax ;count of elements
+	mov	di, ax
 
-	xor	ebx, ebx	
+	xor ax, ax
+	mov al, n
+	mul m ; full count of elements
+	shl ax, 1
+	xor bx,	bx 
+	xor cx, cx
+	mov cx, ax
+	
+	xor ax, ax
+	xor si, si
+	LP:	cmp	bx, cx
+	jge CD
+		mov si,	offset matrix
+		mov [si + bx], ax
+		inc	bx
+		inc	bx
+		jmp LP
 
-	mov	al, nzcount
+	CD:	xor ax, ax
+	mov	al, nzcount 
 	mov	bl, 3
-	mul	al
+	mul	al ;count of nz elements
 	mov	cx, ax ; end of triades array
 	shl cx, 1
 
@@ -31,7 +48,7 @@ Start:	mov	ax, @data
 		mov cx, [si + bx] ;number of column
 		inc	bx
 		inc bx
-		mov	dx, [si + bx]
+		mov	dx, [si + bx] ;value
 		inc bx
 		inc bx
 
