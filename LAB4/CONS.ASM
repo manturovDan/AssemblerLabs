@@ -1,7 +1,7 @@
 	.model small
 	.stack 100h
 	.data
-string db 'hello     world   hihihi!!!aaaa    loLol --432ffff ruru      coRonavirus ', 0
+string db 'corona', 0
 cons db 'BCDFGHJKLMNPRSTVWXZbcdfghjklmnprstvwxz', 0
 consstring db 100 dup(?)
     .code
@@ -37,5 +37,27 @@ m1: lodsb
 
         m3: pop si
             jmp m1
-m5: int 21h
+m5:
+       srt: mov cx, dx
+            mov dx, cx
+            xor bx, bx
+            mov si, offset consstring
+            nc:     mov al, [si + bx]
+                    push cx
+                    mov cl, [si + bx + 1]
+                    cmp al, cl
+                    jnc ns
+
+                    mov [si + bx], cl
+                    mov [si + bx + 1], al
+
+                    ns: inc si
+                            dec dx
+                            pop cx
+                            inc bx
+                            jnz nc
+    loop srt
+    int 21h
     end Start
+
+sort proc
