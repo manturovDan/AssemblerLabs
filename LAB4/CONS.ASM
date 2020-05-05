@@ -1,9 +1,10 @@
 	.model small
 	.stack 100h
 	.data
-string db 'corona', 0
+string db 'AsSe-MB Ly', 0
 cons db 'BCDFGHJKLMNPRSTVWXZbcdfghjklmnprstvwxz', 0
 consstring db 100 dup(?)
+count   dw  0
     .code
 Start: mov ax, @data
     mov ds, ax
@@ -11,7 +12,6 @@ Start: mov ax, @data
 
     lea si, string
     lea di, cons
-    cld
     xor bx, bx
     xor cx, cx
     xor ax, ax
@@ -31,32 +31,41 @@ m1: lodsb
         push si
         mov si, dx
         mov [si], al
-        pop si
+        mov si, count
+        inc si
+        mov count, si
         inc dx
+        pop si
         jmp m3
 
         m3: pop si
             jmp m1
 m5:
-       srt: mov cx, dx
-            mov dx, cx
-            xor bx, bx
+       mov dx, count
+       dec dx
+       srt: xor bx, bx
+            xor di, di
             mov si, offset consstring
             nc:     mov al, [si + bx]
-                    push cx
                     mov cl, [si + bx + 1]
                     cmp al, cl
                     jnc ns
 
                     mov [si + bx], cl
                     mov [si + bx + 1], al
+                    mov di, 1
 
-                    ns: inc si
-                            dec dx
-                            pop cx
-                            inc bx
-                            jnz nc
-    loop srt
+                    ns: inc bx
+
+                        xor ax, ax
+                        cmp ax, di
+                        jne  all
+
+                        cmp bx, dx
+                        je  srt
+                        jmp nc
+    all:
+    mov ax, 4C00h
     int 21h
     end Start
 
