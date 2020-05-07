@@ -27,7 +27,10 @@ Start: mov ax, @data
     mov ds, ax
     mov es, ax
     cld
-m1:
+m1: mov ax, 5
+    push offset items
+    call menu
+
 
     lea si, string
     lea di, cons
