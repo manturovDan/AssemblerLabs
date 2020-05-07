@@ -1,5 +1,22 @@
-	.model small
+	.model medium
 	.stack 100h
+	public	start
+    extrn	items:byte
+    extrn	fn:byte
+    extrn	ibuf:byte
+    extrn	obuf:byte
+    extrn	msg:byte
+    extrn	frm:byte
+    extrn	qws:byte
+    extrn	inp:byte
+    extrn	bye:byte
+    extrn	input:far
+    extrn	inputline:far
+    extrn	readfile:far
+    extrn	output:far
+    extrn	writefile:far
+    extrn	menu:far
+    extrn	algorithm:far
 	.data
 string db 'AsSe-MB Ly', 0
 cons db 'BCDFGHJKLMNPRSTVWXZbcdfghjklmnprstvwxz', 0
@@ -9,6 +26,8 @@ count   dw  0
 Start: mov ax, @data
     mov ds, ax
     mov es, ax
+    cld
+m1:
 
     lea si, string
     lea di, cons
@@ -16,16 +35,16 @@ Start: mov ax, @data
     xor cx, cx
     xor ax, ax
     mov dx, offset consstring
-m1: lodsb
+mi1: lodsb
     cmp al, 0
-    je m5
+    je mi5
     mov bl, al
     push si
     mov si, di
 
-    m2: lodsb
+    mi2: lodsb
         cmp al, 0
-        je m3
+        je mi3
         cmp al, bl
         jne m2
         push si
@@ -36,11 +55,11 @@ m1: lodsb
         mov count, si
         inc dx
         pop si
-        jmp m3
+        jmp mi3
 
-        m3: pop si
-            jmp m1
-m5:
+        mi3: pop si
+            jmp mi1
+mi5:
        mov dx, count
        dec dx
        srt: xor bx, bx
