@@ -1,7 +1,7 @@
 	.model small
 	.stack 100h
 	.data
-string db 'AsSe-MB Ly', 0
+string db 'Lorem ipsum dolor sit amet, consectetur adipiscing elit', 0
 cons db 'BCDFGHJKLMNPRSTVWXZbcdfghjklmnprstvwxz', 0
 consstring db 100 dup(?)
 count   dw  0
@@ -42,9 +42,9 @@ m1: lodsb
             jmp m1
 m5:
        mov dx, count
+       mov dx, di
        dec dx
        srt: xor bx, bx
-            xor di, di
             mov si, offset consstring
             nc:     mov al, [si + bx]
                     mov cl, [si + bx + 1]
@@ -53,17 +53,16 @@ m5:
 
                     mov [si + bx], cl
                     mov [si + bx + 1], al
-                    mov di, 1
 
-                    ns: inc bx
-
-                        xor ax, ax
-                        cmp ax, di
-                        jne  all
-
+                    ns:
                         cmp bx, dx
-                        je  srt
+                        je cond
+                        inc bx
                         jmp nc
+
+                        cond:   dec dx
+                                jz all
+                                jmp srt
     all:
     mov ax, 4C00h
     int 21h

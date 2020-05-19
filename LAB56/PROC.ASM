@@ -320,8 +320,8 @@ extrn	start : far
                                             jmp @@nc
 
                                             @@cond: xor ax, ax
-                                                    cmp ax, di
                                                     inc bx
+                                                    cmp ax, di
                                                     jne @@all
                                                     jmp @@srt
                 @@all:
