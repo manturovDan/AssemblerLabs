@@ -244,93 +244,62 @@ extrn	start : far
         ret
         endp
 
-    algorithm proc
-        locals @@
-        @@ibuf equ [bp+6]
-        @@obuf equ [bp+8]
-        push bp
-        mov bp, sp
-        push ax
-        push bx
-        push cx
-        push si
-        push di
-        mov cx,0ffffh
-        mov di,@@ibuf
-        xor al,al
-        repne scasb ; найти нуль байт
-        neg cx
-        dec cx
-        dec cx
-        jcxz @@ex
-        cmp cx,4095
-        jbe @@m1
-        stc
-        jmp short @@ex
-
-        @@m1:	mov di, @@ibuf
-        mov al,10
-        @@m2:	push di
-            repne scasb
-            cmp byte ptr [di-2], 13
-            jne @@er
-            cmp byte ptr [di-1], 10
-            jne @@er
-
-            pop si ; si - туда идёт lodsb
-
-            mov dx, offset consstring
-            @m11: lodsb
-                cmp al, 13
-                je @@ex ; go to sort
-                mov bl, al
-                push si
-                lea di, cons
-                mov si, di
-
-                @m21: lodsb
-                    cmp al, 0
-                    je @m31
-                    cmp al, bl
-                    jne @m21
-                    ;push si
-                    ;;mov si, dx
-                    ;mov [si], al
-                    push di
-                    mov di, @@obuf
-                    stosb
-                    pop di
-                    inc dx
-                    pop si
-
-                    @m31: pop si
-                    jmp @m11
-
-            jcxz @@ex
-            jmp @@m2
-
-        @@m3:	mov cx, bx
-        mov di, @@obuf
-        @@m4:	pop si
-            @@m5:	lodsb
-                stosb
-                cmp al, 10
-            jne @@m5
-        loop @@m4
-        xor al,al
-        stosb
-        clc
-        jmp short @@ex
-        @@er:	shl bx,1
-        	add sp,bx
-        	stc
-
-        @@ex:	pop di
-        pop si
-        pop cx
-        pop bx
-        pop ax
-        pop bp
-        ret
-        endp
-        end start
+    algorithm	proc
+    	locals @@
+    @@ibuf	equ [bp+6]; буфер с исходными строками. equ - аналогично сишному define
+    @@obuf	equ [bp+8]; буфер, куда надо записать ответ
+    	push bp
+    	mov bp,sp
+    	push ax
+    	push bx
+    	push cx
+    	push si
+    	push di
+    	mov cx,0ffffh
+    	mov di,@@ibuf
+    	xor al,al
+    	repne scasb
+    	neg cx
+    	dec cx
+    	dec cx
+    	jcxz @@ex
+    	cmp cx,4095
+    	jbe @@m1
+    	stc
+    	jmp short @@ex
+    @@m1:	mov di,@@ibuf
+    	mov al,10
+    	xor bx,bx
+    @@m2:	push di; сохраняем адреса начала строк
+    	inc bx
+    	repne scasb; ищем конец строки - 10
+    	cmp byte ptr [di-2],13; указатель указывает на начало следующей строки.
+    	jne @@er
+    	cmp byte ptr [di-1],10; если последняя строка оборвана, мы тоже можем обнулиться ==> надо проверить корректное завершение строки
+    	jne @@er
+    	jcxz @@m3; могли достигнуть конца буфера
+    	jmp @@m2
+    @@m3:	mov cx,bx; загрузили количество строк для внешнего цикла
+    	mov di,@@obuf; настраиваем на начало выходного буфера
+    @@m4:	pop si; адрес очередной строки
+    @@m5:	lodsb; считываем символ
+    	stosb; записали символ
+    	cmp al,10; если очередной символ - 10, извлекаем очередную строку - очередная итерация внешнего цикла
+    	jne @@m5
+    	loop @@m4; посчитали очередную строку
+    	xor al,al; закрываем результирующие данные
+    	stosb
+    	clc; очищаем флаг переноса
+    	jmp short @@ex
+    @@er:	shl bx,1; надо восстановить стек, раз произошла ошибка. В bx хранится число строк, которые мы уже записали.
+    	add sp,bx; восстанавливаем состояние стека до начала работы со строками
+    	stc; устанавливаем флаг ошибки
+    @@ex:	pop di
+    	pop si
+    	pop cx
+    	pop bx
+    	pop ax
+    	pop bp
+    	ret
+    	endp
+    	end start
