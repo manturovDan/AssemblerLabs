@@ -31,7 +31,7 @@ start:	mov ax, @data
         call output
         pop bx
         jmp m10
-    m2:	cmp ax, 1
+    m2:	cmp ax, 1 ; input from keyboard
         jne m3
         push offset inp
         call output
@@ -42,7 +42,7 @@ start:	mov ax, @data
         pop bx
         jc m4
         jmp m1
-    m3:	cmp ax, 2
+    m3:	cmp ax, 2 ; read from file
         jne m5
         push offset qws
         call output
@@ -59,14 +59,14 @@ start:	mov ax, @data
         jc m4
         jmp m1
     m4:	jmp m11
-    m5:	cmp ax, 3
+    m5:	cmp ax, 3 ; output to screen
         jne m6
         push offset obuf
         call output
         pop bx
         jc m4
         jmp m1
-    m6:	cmp ax,4
+    m6:	cmp ax,4 ; write to file
         jne m7
         push offset qws
         call output
@@ -82,7 +82,7 @@ start:	mov ax, @data
         pop bx
         jc m11
         jmp m1
-    m7:	cmp ax, 5
+    m7:	cmp ax, 5 ; run the algorythm
         jne m9
         push offset obuf
         push offset ibuf
