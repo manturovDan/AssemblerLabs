@@ -2,7 +2,7 @@
 public	inputline, input, readfile, output, writefile, menu, algorithm
 extrn	start : far
     .data
-        cons db 'BCDFGHJKLMNPRSTVWXZbcdfghjklmnprstvwxz', 0
+        cons db 'BCDFGHJKLMNPRSTVWXZbcdfghjklmnprstvwxz', 13, 10, 0
         consstring db 100 dup(?)
     .code
     inputline proc
@@ -267,19 +267,22 @@ extrn	start : far
     	jbe @@m1
     	stc
     	jmp short @@ex
-    @@m1:	mov di,@@ibuf
+    @@m1:	mov si, @@ibuf
+            mov di, @@obuf
     	mov al,10
     	xor bx,bx
-    @@m2:	push di; сохраняем адреса начала строк
-
-    	mov di, @@obuf
-        @@m4:	pop si; адрес очередной строки
+    @@m2:
         @@m5:	lodsb; считываем символ
-            stosb; записали символ
-            dec cx
-            cmp al,10; если очередной символ - 10, извлекаем очередную строку - очередная итерация внешнего цикла
+                dec cx
+
+                mov bl, al
+                push si
+                mov si, offset cons
+                pop si
+
+                stosb; записали символ
+                cmp al,10; если очередной символ - 10, извлекаем очередную строку - очередная итерация внешнего цикла
         jne @@m5
-    	mov di, si
 
     	jcxz @@ex; могли достигнуть конца буфера
     	jmp @@m2
