@@ -3,6 +3,7 @@ public	inputline, input, readfile, output, writefile, menu, algorithm
 extrn	start : far
     .data
         cons db 'BCDFGHJKLMNPRSTVWXZbcdfghjklmnprstvwxz', 0
+        consstring db 100 dup(?)
     .code
     inputline proc
         locals @@
@@ -269,19 +270,44 @@ extrn	start : far
 
         @@m1:	mov di, @@ibuf
         mov al,10
-        xor bx,bx
         @@m2:	push di
-            inc bx
             repne scasb
             cmp byte ptr [di-2], 13
             jne @@er
             cmp byte ptr [di-1], 10
             jne @@er
 
-            ;@m11 lodsb
+            pop si ; si - туда идёт lodsb
 
-            jcxz @@m3 ; go to sort
-        jmp @@m2
+            mov dx, offset consstring
+            @m11: lodsb
+                cmp al, 13
+                je @@ex ; go to sort
+                mov bl, al
+                push si
+                lea di, cons
+                mov si, di
+
+                @m21: lodsb
+                    cmp al, 0
+                    je @m31
+                    cmp al, bl
+                    jne @m21
+                    ;push si
+                    ;;mov si, dx
+                    ;mov [si], al
+                    push di
+                    mov di, @@obuf
+                    stosb
+                    pop di
+                    inc dx
+                    pop si
+
+                    @m31: pop si
+                    jmp @m11
+
+            jcxz @@ex
+            jmp @@m2
 
         @@m3:	mov cx, bx
         mov di, @@obuf
