@@ -313,14 +313,17 @@ extrn	start : far
                                     mov [si + bx + 1], al
                                     mov di, 1
 
-                                    @@ns:   inc bx
-                                            jmp @@all
-                                            xor ax, ax
-                                            cmp ax, di
-                                            jne @@all
+                                    @@ns:
                                             cmp bx, dx
-                                            je @@srt
+                                            je @@cond
+                                            inc bx
                                             jmp @@nc
+
+                                            @@cond: xor ax, ax
+                                                    cmp ax, di
+                                                    inc bx
+                                                    jne @@all
+                                                    jmp @@srt
                 @@all:
                     pop di
                     pop cx
