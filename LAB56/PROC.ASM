@@ -271,21 +271,25 @@ extrn	start : far
         mov al,10
         xor bx,bx
         @@m2:	push di
-        inc bx
-        repne scasb
-        cmp byte ptr [di-2], 13
-        jne @@er
-        cmp byte ptr [di-1], 10
-        jne @@er
-        jcxz @@m3
+            inc bx
+            repne scasb
+            cmp byte ptr [di-2], 13
+            jne @@er
+            cmp byte ptr [di-1], 10
+            jne @@er
+
+            ;@m11 lodsb
+
+            jcxz @@m3 ; go to sort
         jmp @@m2
+
         @@m3:	mov cx, bx
         mov di, @@obuf
         @@m4:	pop si
-        @@m5:	lodsb
-        stosb
-        cmp al, 10
-        jne @@m5
+            @@m5:	lodsb
+                stosb
+                cmp al, 10
+            jne @@m5
         loop @@m4
         xor al,al
         stosb
