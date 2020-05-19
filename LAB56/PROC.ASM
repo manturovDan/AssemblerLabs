@@ -296,7 +296,7 @@ extrn	start : far
 
         @@m5s:   ; bx - начало, dx - длина
                             cmp dx, 3
-                            jle @@ex
+                            jle @@m2
     	                    sub dx, 3
     	                    push si
     	                    push cx
