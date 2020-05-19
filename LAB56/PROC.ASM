@@ -278,12 +278,17 @@ extrn	start : far
                 mov bl, al
                 push si
                 mov si, offset cons
-                pop si
 
-                stosb; записали символ
-                cmp al,10; если очередной символ - 10, извлекаем очередную строку - очередная итерация внешнего цикла
-        jne @@m5
+                @@mc:   lodsb
+                        cmp al, 0
+                        je @@me
+                        cmp al, bl
+                        jne @@mc
+                        stosb
+                @@me: pop si
 
+                cmp al,10
+                jne @@m5
     	jcxz @@ex; могли достигнуть конца буфера
     	jmp @@m2
     ;@@m3:	mov cx,bx; загрузили количество строк для внешнего цикла
