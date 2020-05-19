@@ -272,9 +272,10 @@ extrn	start : far
     	mov al,10
     	xor bx,bx
     @@m2:
+        mov bx, di
+        xor dx, dx
         @@m5:	lodsb; считываем символ
                 dec cx
-
                 mov bl, al
                 push si
                 mov si, offset cons
@@ -285,24 +286,47 @@ extrn	start : far
                         cmp al, bl
                         jne @@mc
                         stosb
+                        inc dx
                 @@me: pop si
 
                 cmp al,10
                 jne @@m5
     	jcxz @@ex; могли достигнуть конца буфера
-    	jmp @@m2
-    ;@@m3:	mov cx,bx; загрузили количество строк для внешнего цикла
-    ;	mov di, @@obuf; настраиваем на начало выходного буфера
-    ;    @@m4:	pop si; адрес очередной строки
-   ;         @@m5:	lodsb; считываем символ
-    ;	    stosb; записали символ
-    ;	cmp al,10; если очередной символ - 10, извлекаем очередную строку - очередная итерация внешнего цикла
-    ;	jne @@m5
-    ;	loop @@m4; посчитали очередную строку
-    ;	xor al,al; закрываем результирующие данные
-    ;	stosb
-    ;	clc; очищаем флаг переноса
-    ;	jmp short @@ex
+        jmp @@m5s
+
+        @@m5s:   ; bx - начало, dx - длина
+                            cmp dx, 3
+                            jle @@ex
+    	                    sub dx, 3
+    	                    push si
+    	                    push cx
+    	                    mov si, bx
+    	                    push di
+    	              @@srt: xor bx, bx
+    	                    xor di, di
+    	                    @@nc:   mov al, [si + bx]
+    	                            mov cl, [si + bx + 1]
+    	                            cmp al, cl
+    	                            jnc @@ns
+
+    	                            mov [si + bx], cl
+                                    mov [si + bx + 1], al
+                                    mov di, 1
+
+                                    @@ns:   inc bx
+                                            jmp @@all
+                                            xor ax, ax
+                                            cmp ax, di
+                                            jne @@all
+                                            cmp bx, dx
+                                            je @@srt
+                                            jmp @@nc
+                @@all:
+                    pop di
+                    pop cx
+                    pop si
+                    jmp @@m2
+
     @@er:	shl bx,1; надо восстановить стек, раз произошла ошибка. В bx хранится число строк, которые мы уже записали.
     	add sp,bx; восстанавливаем состояние стека до начала работы со строками
     	stc; устанавливаем флаг ошибки

@@ -1,0 +1,9 @@
+
+ Start  Stop   Length Name               Class
+
+ 00000H 001BBH 001BCH PROC_TEXT          CODE
+ 001BCH 00248H 0008DH _DATA              DATA
+
+Error: Undefined symbol START in module PROC.ASM
+Fatal: General error in module PROC.ASM near module file offset 0x00000322
+
