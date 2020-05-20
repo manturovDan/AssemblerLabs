@@ -356,14 +356,11 @@ extrn	start : far
             push di
             jmp @@m2
 
-    @@er:	shl bx,1
+    @@er:
+    shl bx,1
     	add sp,bx
     	stc
     @@ex:
-        xor al,al
-                stosb
-                clc
-
         pop di
     	pop si
     	pop dx
