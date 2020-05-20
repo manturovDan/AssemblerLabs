@@ -273,8 +273,8 @@ extrn	start : far
     	xor bx,bx
     	push di
     @@m2:
+        inc bx
         mov di, offset consstring
-        mov bx, di
         xor dx, dx
         @@m5:	lodsb; считываем символ
                 dec cx
@@ -297,9 +297,42 @@ extrn	start : far
                 cmp al,10
                 jne @@m5
     	jcxz @@ex; могли достигнуть конца буфера
-        jmp @@m5s
+        jmp @@m5b
 
-        @@m5s: ; bx - начало, dx - длина
+        @@m5b:
+            push si
+            push dx
+            push cx
+            push bx
+            cmp dx, 3
+            jle @@alls
+            sub dx, 3
+            @@srt:
+                xor bx, bx
+                mov si, offset consstring
+                @@nc:   mov al, [si + bx]
+                        mov cl, [si + bx + 1]
+                        cmp al, cl
+                        jnc @@ns
+
+                        mov [si + bx], cl
+                        mov [si + bx + 1], al
+
+                        @@ns:
+                            cmp bx, dx
+                            je @@cond
+                            inc bx
+                            jmp @@nc
+
+                            @@cond: dec dx
+                                    jz @@alls
+                                    jmp @@srt
+            @@alls: pop bx
+                    pop cx
+                    pop dx
+                    pop si
+
+        @@m5s:
             pop di
             push si
             mov si, offset consstring
@@ -314,13 +347,13 @@ extrn	start : far
             push di
             jmp @@m2
 
-    @@er:	shl bx,1; надо восстановить стек, раз произошла ошибка. В bx хранится число строк, которые мы уже записали.
-    	add sp,bx; восстанавливаем состояние стека до начала работы со строками
-    	stc; устанавливаем флаг ошибки
+    @@er:	shl bx,1
+    	add sp,bx
+    	stc
     @@ex:
-        xor al,al; закрываем результирующие данные
+        xor al,al
                 stosb
-                clc; очищаем флаг переноса
+                clc
 
         pop di
     	pop si
