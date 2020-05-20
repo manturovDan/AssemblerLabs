@@ -271,7 +271,9 @@ extrn	start : far
             mov di, @@obuf
     	mov al,10
     	xor bx,bx
+    	push di
     @@m2:
+        mov di, offset consstring
         mov bx, di
         xor dx, dx
         @@m5:	lodsb; считываем символ
@@ -286,9 +288,10 @@ extrn	start : far
                         je @@me
                         cmp al, cl
                         jne @@mc
-                        stosb
+                        mov [di], al
+                        inc di
                         inc dx
-                @@me:   pop si
+                @@me: pop si
 
                 pop cx
                 cmp al,10
@@ -296,52 +299,20 @@ extrn	start : far
     	jcxz @@ex; могли достигнуть конца буфера
         jmp @@m5s
 
-        @@m5s:   ; bx - начало, dx - длина
-                            push di
-                            mov di, bx
-                            mov ax, dx
-                            stosb
-                            pop di
-                            jmp @@m2
-                            cmp dx, 3
-                            jle @@m2
-    	                    sub dx, 3
-    	                    push si
-    	                    push cx
-    	                    mov si, bx
-    	                    push di
-    	                    mov di, dx
-    	                    inc di
-    	              @@srt:
-    	                    xor bx, bx
-    	                    @@nc:   mov al, [si + bx]
-    	                            mov cl, [si + bx + 1]
+        @@m5s: ; bx - начало, dx - длина
+            pop di
+            push si
+            mov si, offset consstring
+            @@it:
+            lodsb
+            stosb
+            dec dx
+            jnz @@it
 
-                                    mov al, 't'
-    	                            mov [si + bx], al
-    	                            mov [si + bx + 1], al
-                                    jmp @@all
-
-    	                            cmp al, cl
-    	                            jnc @@ns
-
-    	                            mov [si + bx], cl
-                                    mov [si + bx + 1], al
-
-                                    @@ns:
-                                            cmp bx, dx
-                                            je @@cond
-                                            inc bx
-                                            jmp @@nc
-
-                                            @@cond: dec dx
-                                                    jz @@all
-                                                    jmp @@srt
-                @@all:
-                    pop di
-                    pop cx
-                    pop si
-                    jmp @@m2
+            @@all:
+            pop si
+            push di
+            jmp @@m2
 
     @@er:	shl bx,1; надо восстановить стек, раз произошла ошибка. В bx хранится число строк, которые мы уже записали.
     	add sp,bx; восстанавливаем состояние стека до начала работы со строками
