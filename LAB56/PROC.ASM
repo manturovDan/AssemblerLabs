@@ -276,25 +276,33 @@ extrn	start : far
         xor dx, dx
         @@m5:	lodsb; считываем символ
                 dec cx
-                mov bl, al
+                push cx
+                mov cl, al
                 push si
                 mov si, offset cons
 
                 @@mc:   lodsb
                         cmp al, 0
                         je @@me
-                        cmp al, bl
+                        cmp al, cl
                         jne @@mc
                         stosb
                         inc dx
-                @@me: pop si
+                @@me:   pop si
 
+                pop cx
                 cmp al,10
                 jne @@m5
     	jcxz @@ex; могли достигнуть конца буфера
         jmp @@m5s
 
         @@m5s:   ; bx - начало, dx - длина
+                            push di
+                            mov di, bx
+                            mov ax, dx
+                            stosb
+                            pop di
+                            jmp @@m2
                             cmp dx, 3
                             jle @@m2
     	                    sub dx, 3
@@ -302,16 +310,23 @@ extrn	start : far
     	                    push cx
     	                    mov si, bx
     	                    push di
-    	              @@srt: xor bx, bx
-    	                    xor di, di
+    	                    mov di, dx
+    	                    inc di
+    	              @@srt:
+    	                    xor bx, bx
     	                    @@nc:   mov al, [si + bx]
     	                            mov cl, [si + bx + 1]
+
+                                    mov al, 't'
+    	                            mov [si + bx], al
+    	                            mov [si + bx + 1], al
+                                    jmp @@all
+
     	                            cmp al, cl
     	                            jnc @@ns
 
     	                            mov [si + bx], cl
                                     mov [si + bx + 1], al
-                                    mov di, 1
 
                                     @@ns:
                                             cmp bx, dx
@@ -319,10 +334,8 @@ extrn	start : far
                                             inc bx
                                             jmp @@nc
 
-                                            @@cond: xor ax, ax
-                                                    inc bx
-                                                    cmp ax, di
-                                                    jne @@all
+                                            @@cond: dec dx
+                                                    jz @@all
                                                     jmp @@srt
                 @@all:
                     pop di
