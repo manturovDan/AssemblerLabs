@@ -253,8 +253,17 @@ extrn	start : far
     	push ax
     	push bx
     	push cx
+    	push dx
     	push si
     	push di
+
+    	xor ax, ax
+    	xor bx, bx
+    	xor cx, cx
+    	xor dx, dx
+    	xor si, si
+    	xor di, di
+
     	mov cx,0ffffh
     	mov di,@@ibuf
     	xor al,al
@@ -357,10 +366,12 @@ extrn	start : far
 
         pop di
     	pop si
+    	pop dx
     	pop cx
     	pop bx
     	pop ax
     	pop bp
+
     	ret
     	endp
     	end start
