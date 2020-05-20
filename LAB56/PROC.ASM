@@ -281,8 +281,7 @@ extrn	start : far
     	mov al,10
     	xor bx,bx
     	push di
-    @@m2:
-        inc bx
+    @@m2: inc bx
         mov di, offset consstring
         xor dx, dx
         @@m5:	lodsb; считываем символ
@@ -308,8 +307,7 @@ extrn	start : far
     	jcxz @@ex; могли достигнуть конца буфера
         jmp @@m5b
 
-        @@m5b:
-            push si
+        @@m5b: push si
             push dx
             push cx
             push bx
@@ -327,8 +325,7 @@ extrn	start : far
                         mov [si + bx], cl
                         mov [si + bx + 1], al
 
-                        @@ns:
-                            cmp bx, dx
+                        @@ns: cmp bx, dx
                             je @@cond
                             inc bx
                             jmp @@nc
@@ -341,8 +338,7 @@ extrn	start : far
                     pop dx
                     pop si
 
-        @@m5s:
-            pop di
+        @@m5s: pop di
             push si
             mov si, offset consstring
             @@it:
@@ -356,11 +352,11 @@ extrn	start : far
             push di
             jmp @@m2
 
-    @@er:
-    shl bx,1
+    @@er: shl bx,1
     	add sp,bx
     	stc
-    @@ex:
+    @@ex: clc
+        pop di
         pop di
     	pop si
     	pop dx
