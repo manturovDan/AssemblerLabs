@@ -42,7 +42,6 @@ m1: lodsb
             jmp m1
 m5:
        mov dx, count
-       mov dx, di
        dec dx
        srt: xor bx, bx
             mov si, offset consstring
